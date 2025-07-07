@@ -1,11 +1,14 @@
 import { authenticate, unauthenticated } from "app/shopify.server";
-import { dirname, join } from "path";
 
 import type { LoaderFunctionArgs } from "@remix-run/node";
+import bundleLiquidTemplate from "./assets/bundle-page.liquid?raw";
 import db from "app/db.server";
-import { fileURLToPath } from "url";
+// import { fileURLToPath } from "url";
 import { getProductById } from "app/utils/getProductById";
-import { readFileSync } from "fs";
+
+// import { dirname, join } from "path";
+
+// import { readFileSync } from "fs";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { session, liquid } = await authenticate.public.appProxy(request);
@@ -33,12 +36,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   console.log(products);
 
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
+  // const __filename = fileURLToPath(import.meta.url);
+  // const __dirname = dirname(__filename);
 
   return liquid(
-    readFileSync(join(__dirname, "assets", "bundle-page.liquid"))
-      .toString("utf-8")
+    // readFileSync(join(__dirname, "assets", "bundle-page.liquid"))
+    //   .toString("utf-8")
+    bundleLiquidTemplate
       .replace("$bundle", JSON.stringify(bundle))
       .replace("$products", JSON.stringify(products)),
   );
