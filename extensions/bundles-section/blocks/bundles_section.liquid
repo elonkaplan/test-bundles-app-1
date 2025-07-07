@@ -1,0 +1,26 @@
+<section x-data="bundles">
+  <h1 class="text-red">Bundles</h1>
+  <ul class="bundles-list">
+    <template x-for="bundle in bundles" :key="bundle.id">
+      <li class="bundles-item">
+        <a x-bind:href="'/apps/api/bundles/' + bundle.id">
+          <h3 x-text="bundle.title"></h3>
+          <p>Price: $<span x-text="bundle.price"></span></p>
+          <p>Product amount: <span x-text="bundle.productAmount"></span></p>
+        </a>
+      </li>
+    </template>
+  </ul>
+</section>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+{% schema %}
+{
+  "name": "Bundles section",
+  "target": "section",
+  "javascript": "bundles-section.js",
+  "stylesheet": "bundles-section.css"
+}
+{% endschema %}
+

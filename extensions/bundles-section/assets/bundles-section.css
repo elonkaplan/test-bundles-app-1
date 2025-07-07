@@ -1,0 +1,26 @@
+.bundles-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bundles-item {
+  background-color: white;
+  width: calc((100% - 8px) / 2);
+  padding: 8px 16px;
+
+  @media screen and (min-width: 550px) {
+    width: calc((100% - 8px * 2) / 3);
+  }
+
+  @media screen and (min-width: 1000px) {
+    width: calc((100% - 8px * 4) / 5);
+  }
+}
+
+.bundles-list a {
+  text-decoration: none;
+  color: black;
+}

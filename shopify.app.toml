@@ -1,0 +1,32 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+application_url = "https://prayers-prisoners-faculty-gained.trycloudflare.com"
+client_id = "7af5bcb2c4227b7808abac7e95528de1"
+embedded = true
+handle = "test-bundles-app-3"
+name = "test-bundles-app-1"
+
+[build]
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true
+
+[webhooks]
+api_version = "2025-07"
+
+[[webhooks.subscriptions]]
+topics = ["app/uninstalled"]
+uri = "/webhooks/app/uninstalled"
+
+[[webhooks.subscriptions]]
+topics = ["app/scopes_update"]
+uri = "/webhooks/app/scopes_update"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products,write_files,write_themes,write_orders,write_draft_orders,unauthenticated_read_product_listings,write_draft_orders"
+
+[auth]
+redirect_urls = ["https://prayers-prisoners-faculty-gained.trycloudflare.com/auth/callback", "https://prayers-prisoners-faculty-gained.trycloudflare.com/auth/shopify/callback", "https://prayers-prisoners-faculty-gained.trycloudflare.com/api/auth/callback"]
+
+[pos]
+embedded = false

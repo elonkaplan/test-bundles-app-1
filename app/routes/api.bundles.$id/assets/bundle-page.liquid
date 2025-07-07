@@ -1,0 +1,166 @@
+<section class="page-width bundle" x-data="bundle">
+    <div class="top-wrapper">
+        <div>
+            <h1>Bundle <span x-text="bundle.title"></span></h1>
+            <p>$<span x-text="bundle.price"></span></p>
+            <p class="bold">You can select any <span x-text="bundle.productAmount"></span> items from the list:</p>
+        </div>
+        <button 
+            x-on:click="purchase()" 
+            x-bind:disabled="getSelectedAmount() !== bundle.productAmount" 
+            class="product-form__submit button button--secondary"
+        >Buy this bundle</button>
+    </div>
+
+    <template x-if="getSelectedAmount() > bundle.productAmount">
+        <p class="error">You selected too many products, only <span x-text="bundle.productAmount"></span> allowed for this
+            bundle!</p>
+    </template>
+
+    <ul class="list">
+        <template x-for="product in products" :key="product.id">
+            <li class="item">
+                <label class="label">
+                    <input 
+                        type="checkbox" 
+                        x-on:change="e => handleCheck(e)" 
+                        name="product" 
+                        x-bind:value="product.id" 
+                        class="input" 
+                        x-bind:disabled="!selectedProducts[product.id] && getSelectedAmount() >= bundle.productAmount" 
+                    />
+                    <img x-bind:src="product.imageUrl" x-bind:alt="product.title" width="50px" class="image" />
+                    <div>
+                        <h3 x-text="product.title"></h3>
+                        <p class="price">$<span x-text="product.price"></span></p>
+                    </div>
+                </label>
+
+                <template x-if="selectedProducts[product.id] > 0">
+                    <quantity-input class="quantity cart-quantity">
+                        <button class="quantity__button no-js-hidden disabled" name="minus" type="button">
+                            <span class="visually-hidden">Decrease quantity for The Collection Snowboard: Liquid</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" class="icon icon-minus" fill="none"
+                                viewBox="0 0 10 2">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M.5 1C.5.7.7.5 1 .5h8a.5.5 0 110 1H1A.5.5 0 01.5 1z"
+                                    fill="currentColor">
+                                </path>
+                            </svg>
+                    
+                        </button>
+                        <input class="quantity__input" type="number" data-quantity-variant-id="52368914415926" name="updates[]" value="1"
+                            data-cart-quantity="1" min="1" step="1" aria-label="Quantity for The Collection Snowboard: Liquid"
+                            id="Drawer-quantity-1" data-index="1" data-dashlane-rid="ad8b051e28043fb4" data-dashlane-classification="other" x-on:change="(e) => handleQuantityChange(e, product.id)">
+                        <button class="quantity__button no-js-hidden" name="plus" type="button" data-dashlane-label="true"
+                            data-dashlane-rid="cb055c41158571cb" data-dashlane-classification="other" x-bind:disabled="getSelectedAmount() >= bundle.productAmount">
+                            <span class="visually-hidden">Increase quantity for The Collection Snowboard: Liquid</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" class="icon icon-plus" fill="none"
+                                viewBox="0 0 10 10">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M1 4.51a.5.5 0 000 1h3.5l.01 3.5a.5.5 0 001-.01V5.5l3.5-.01a.5.5 0 00-.01-1H5.5L5.49.99a.5.5 0 00-1 .01v3.5l-3.5.01H1z"
+                                    fill="currentColor">
+                                </path>
+                            </svg>
+                    
+                        </button>
+                    </quantity-input>
+                </template>
+            </li>
+        </template>
+    </ul>
+</section>
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+    document.addEventListener("alpine:init", () => {
+        Alpine.data("bundle", () => ({
+            bundle: JSON.parse(`$bundle`),
+            products: JSON.parse(`$products`),
+            selectedProducts: {},
+            init() {
+                console.log('init', this.bundle, this.products)
+            },
+            handleCheck(e) {
+                const {checked, value} = e.target
+                checked ? this.selectedProducts[value] = 1 : this.selectedProducts[value] = 0
+            },
+            getSelectedAmount() {
+                return Object.keys(this.selectedProducts).reduce((acc, key) => acc + this.selectedProducts[key], 0)
+            },
+            handleQuantityChange(e, productId) {
+                this.selectedProducts[productId] = Number(e.target.value)
+            },
+            purchase() {
+                console.log(this.selectedProducts)
+                const formData = new FormData()
+
+                console.log(JSON.stringify(this.selectedProducts))
+                formData.set("bundleId", this.bundle.id.toString())
+                formData.set("selectedProducts", JSON.stringify(this.selectedProducts))
+
+                fetch("/apps/api/bundles/checkout", {
+                    method: "POST",
+                    body: formData
+                }).then(res => res.json())
+                .then(({ invoiceUrl }) => window.open(invoiceUrl))
+                .catch(console.log)
+            }
+        }));
+    });
+</script>
+
+
+<style>
+    .bundle .top-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+    }
+
+    .bundle .error {
+        color: red;
+    }
+
+    .bundle .list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .bundle .quantity {
+        margin-top: 8px;
+    }
+
+    .bundle .item {
+        background-color: white;
+        padding: 8px 12px;
+        width: calc((100% - 8px) / 2);
+    }
+
+    .bundle .label {
+        display: flex;
+    }
+
+    .bundle .input {
+        display: block;
+        margin-right: 8px;
+    }
+
+    .bundle .image {
+        display: block;
+        margin-right: 8px;
+    }
+
+    .bundle .bold {
+        font-weight: bold;
+    }
+
+    .bundle .price, .bundle .price span {
+        color: red;
+        text-decoration: line-through;
+    }
+</style>
